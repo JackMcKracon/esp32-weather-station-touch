@@ -74,63 +74,85 @@ void updateData(boolean updateProgressBar);
 
 Task clockTask(1000, TASK_FOREVER, &drawTimeAndDate);
 
-struct button
-{
-  int Bx; 
-  int By; 
-  int BH; 
-  int BW; 
-  const char *Inhalt;
-  String zeichen;
-  int ZeichenGröße;
-  
-  
-  boolean Button() {
-    //boolean value = 1;
-    TS_Point p = ts.getPoint();
-    return (p.x <= Bx + BW && p.x >= Bx  && p.y <= By + BH && p.y >= By);
-  }
+class button {
+public:
+    enum buttonSign{
+      NONE,
+      VIERECK,
+      DREIECK
+    };
 
-  void Kasten() {
-    tft.drawRoundRect(Bx, By, BW, BH, 20, TFT_WHITE);
-  }
+    button(int theBx, int theBy, int theBH, int theBW, const char* theInhalt, buttonSign theZeichen, int theZeichenGroesse) 
+        : Bx(theBx), 
+          By(theBy), 
+          BH(theBH), 
+          BW(theBW), 
+          ZeichenGroesse(theZeichenGroesse), 
+          zeichen(theZeichen) 
+    {
+        // Copy the content into the Inhalt array
+        strncpy(Inhalt, theInhalt, sizeof(Inhalt) - 1);
+        Inhalt[sizeof(Inhalt) - 1] = '\0'; // Ensure null-termination
 
-  void Bezeichnung() {
-    tft.setTextSize(2);
-    int Txt = Bx + (BW / 2);
-    int Tyt = By + (BH / 2);
-    int Tx = Txt - (tft.textWidth(Inhalt)/ 2);
-    int Ty = Tyt - (8*tft.textsize / 2);
-    tft.setTextSize(2);
-    tft.drawString(Inhalt, Tx, Ty);
-  }
-
-  int Zx = Bx + (BW-(ZeichenGröße / 2));
-  int Zy = By + (BH-(ZeichenGröße / 2));
-
-
-  void Zeichen() {
-    if (zeichen == "Viereck") {
-      tft.drawRect(Zx, Zy, ZeichenGröße, ZeichenGröße, TFT_WHITE);
+        // Calculate Zx and Zy
+        Zx = this->Bx + (this->BW - (this->ZeichenGroesse / 2));
+        Zy = this->By + (this->BH - (this->ZeichenGroesse / 2));
     }
-    else if (zeichen == "Dreieck") {
-      int Zx1 = Zx;
-      int Zy1 = Zy;
 
-      tft.drawTriangle()
+    
+    
+    
+    boolean Button() {
+      //boolean value = 1;
+      TS_Point p = ts.getPoint();
+      return (p.x <= Bx + BW && p.x >= Bx  && p.y <= By + BH && p.y >= By);
     }
-  }
 
+    void Kasten() {
+      tft.drawRoundRect(Bx, By, BW, BH, 20, TFT_WHITE);
+    }
+
+    void Bezeichnung() {
+      tft.setTextSize(2);
+      int Txt = Bx + (BW / 2);
+      int Tyt = By + (BH / 2);
+      int Tx = Txt - (tft.textWidth(Inhalt)/ 2);
+      int Ty = Tyt - (8*tft.textsize / 2);
+      tft.setTextSize(2);
+      tft.drawString(Inhalt, Tx, Ty);
+    }
+
+    void Zeichen() {
+      if (zeichen == VIERECK) {
+        tft.drawRect(Zx, Zy, ZeichenGroesse, ZeichenGroesse, TFT_WHITE);
+      }
+      else if (zeichen == DREIECK) {
+        int Zx1 = Zx;
+        int Zy1 = Zy;
+
+      //tft.drawTriangle()
+      }
+    }
+  private:
+    int Bx;
+    int By;
+    int BH;
+    int BW;
+    char Inhalt[128];
+    buttonSign zeichen;  
+    int ZeichenGroesse;
+    int Zx;
+    int Zy;
 };
 
-struct button buttonone = {200, 200, 100, 100};
-struct button buttontwo = {0, 200, 100, 100};
-struct button buttonDeckone = {40, 45, 100, 100,"","",0};
-struct button buttonDecktwo = {180, 190, 100, 100};
-struct button buttonDeckthree = {40, 335, 100, 100};
-struct button buttonDeckfour = {180, 45, 100, 100};
-struct button buttonDeckfive = {40, 190, 100, 100};
-struct button buttonDecksix = {180, 335, 100, 100};
+ button buttonone(200, 200, 100, 100,"",button::NONE,0);
+ button buttontwo(0, 200, 100, 100,"",button::NONE,0);
+ button buttonDeckone(40, 45, 100, 100,"",button::VIERECK,0);
+ button buttonDecktwo(180, 190, 100, 100,"",button::DREIECK,0);
+ button buttonDeckthree(40, 335, 100, 100,"",button::VIERECK,0);
+ button buttonDeckfour(180, 45, 100, 100,"",button::DREIECK,0);
+ button buttonDeckfive(40, 190, 100, 100,"",button::VIERECK,0);
+ button buttonDecksix(180, 335, 100, 100,"",button::VIERECK,0);
 // ----------------------------------------------------------------------------
 // setup() & loop()
 // ----------------------------------------------------------------------------
